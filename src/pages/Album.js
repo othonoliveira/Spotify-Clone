@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
+import MusicCard from '../components/MusicCard';
+import { addSong, removeSong } from '../services/favoriteSongsAPI';
 
 class Album extends React.Component {
   state = {
@@ -27,8 +29,34 @@ class Album extends React.Component {
     });
   };
 
+  handleCheck = ({ target }) => {
+    const { musics } = this.state;
+    const { checked, id } = target;
+    const music = musics.find((element) => element.trackId === id);
+    if (checked) {
+      this.setState({
+        loading: true,
+        [id]: true,
+      }, async () => {
+        const addFavorite = await addSong(music);
+        console.log(addFavorite);
+        this.setState({ loading: false });
+      });
+    } else {
+      this.setState({
+        loading: true,
+        [id]: false,
+      }, async () => {
+        const removeFavorite = await removeSong(music);
+        console.log(removeFavorite);
+        this.setState({ loading: false });
+      });
+    }
+  };
+
   render() {
     const { musics, loading, artistName, albumName } = this.state;
+    const { handleCheck } = this;
     return (
       <>
         <Header />
@@ -39,20 +67,14 @@ class Album extends React.Component {
             <h2 data-testid="album-name">{albumName}</h2>
             {musics.filter((element, _index, array) => element !== array[0])
               .map((element, index) => (
-                <div key={ index }>
-                  <p>{element.trackName}</p>
-                  <audio
-                    data-testid="audio-component"
-                    src={ element.previewUrl }
-                    controls
-                  >
-                    <track kind="captions" />
-                    {'O seu navegador não suporta o elemento{" "}'}
-                    {' '}
-                    <code>audio</code>
-                    .
-                  </audio>
-                </div>
+                <MusicCard
+                  key={ index }
+                  trackId={ element.trackId }
+                  trackName={ element.trackName }
+                  previewUrl={ element.previewUrl }
+                  handleCheck={ handleCheck }
+                  state={ this.state }
+                />
               ))}
           </div>
         )}
