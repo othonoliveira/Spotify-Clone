@@ -33,7 +33,7 @@ class Album extends React.Component {
   handleCheck = async ({ target }) => {
     const { musics } = this.state;
     const { checked, id } = target;
-    const music = musics.find((element) => element.trackId === id);
+    const music = musics.find((element) => element.trackId === +id);
     if (checked) {
       this.setState({ loading: true, [id]: true });
       const addFavorite = await addSong(music);
