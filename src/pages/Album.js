@@ -29,28 +29,20 @@ class Album extends React.Component {
     });
   };
 
-  handleCheck = ({ target }) => {
+  handleCheck = async ({ target }) => {
     const { musics } = this.state;
     const { checked, id } = target;
     const music = musics.find((element) => element.trackId === id);
     if (checked) {
-      this.setState({
-        loading: true,
-        [id]: true,
-      }, async () => {
-        const addFavorite = await addSong(music);
-        console.log(addFavorite);
-        this.setState({ loading: false });
-      });
+      this.setState({ loading: true, [id]: true });
+      const addFavorite = await addSong(music);
+      console.log(addFavorite);
+      this.setState({ loading: false });
     } else {
-      this.setState({
-        loading: true,
-        [id]: false,
-      }, async () => {
-        const removeFavorite = await removeSong(music);
-        console.log(removeFavorite);
-        this.setState({ loading: false });
-      });
+      this.setState({ loading: true, [id]: false });
+      const removeFavorite = await removeSong(music);
+      console.log(removeFavorite);
+      this.setState({ loading: false });
     }
   };
 
