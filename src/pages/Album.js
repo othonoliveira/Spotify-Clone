@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
-import { addSong, removeSong } from '../services/favoriteSongsAPI';
+import { addSong, removeSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Album extends React.Component {
   state = {
@@ -16,6 +16,7 @@ class Album extends React.Component {
   componentDidMount() {
     const { match: { params: { id } } } = this.props;
     this.fetchMusics(id);
+    this.fetchFavorites();
     this.setState({ loading: false });
   }
 
@@ -44,6 +45,15 @@ class Album extends React.Component {
       console.log(removeFavorite);
       this.setState({ loading: false });
     }
+  };
+
+  fetchFavorites = async () => {
+    const response = await getFavoriteSongs();
+    const favoriteSongs = response.reduce((acc, cur) => ({
+      ...acc,
+      [cur.trackId]: true,
+    }), {});
+    this.setState({ ...favoriteSongs });
   };
 
   render() {
